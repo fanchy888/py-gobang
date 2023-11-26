@@ -1,7 +1,7 @@
 import pygame
 import sys
 
-from gobang.board import GobangBoard
+from gobang.board import Board
 
 pygame.init()
 
@@ -29,7 +29,7 @@ class GameClient:
     def __init__(self):
         self.screen = pygame.display.set_mode(size)
         pygame.display.set_caption('五子棋')
-        self.game = GobangBoard(RULE)
+        self.game = Board(RULE)
         self.player = None
 
     def quit(self):

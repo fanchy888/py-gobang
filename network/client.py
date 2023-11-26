@@ -16,6 +16,6 @@ if __name__ == '__main__':
     print(time.time())
     while a != 'esc':
         a = input()
-        s = client.emit(a, {'event': a}, namespace='/game')
+        s = client.emit(a, namespace='/game')
     time.sleep(1)
     client.disconnect()
