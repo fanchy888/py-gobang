@@ -1,10 +1,10 @@
-
+from config import config
 from gobang.board import Board
 
 
 class GameServer:
     def __init__(self, room):
-        self.board = Board()
+        self.board = Board(config.rule)
         self.is_black = True
         self.room = room
         self.players = {}

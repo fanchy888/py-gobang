@@ -17,5 +17,9 @@ class Config:
     def host(self):
         return self.cfg['host']
 
+    @property
+    def rule(self):
+        return self.cfg.get('rule', 19)
+
 
 config = Config()

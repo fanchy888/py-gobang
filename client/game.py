@@ -5,7 +5,7 @@ from gobang.board import Board
 
 class GameClient:
     def __init__(self):
-        self.board = Board()
+        self.board = Board(config.rule)
         self.is_black = True
         url = config.host
         client.connect(url, socketio_path='/socket-game', transports=['websocket'], namespaces=['/game'])

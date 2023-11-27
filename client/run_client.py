@@ -3,11 +3,11 @@ import pygame
 import sys
 
 from client import game_client
-from gobang.board import Board
+from config import config
 
 pygame.init()
 
-RULE = 19
+RULE = config.rule
 ROW_COUNT = RULE - 1
 COLUMN_COUNT = RULE - 1
 SQUARE_SIZE = 40
