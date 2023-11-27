@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 import pygame
 import sys
 
+from client import game_client
 from gobang.board import Board
 
 pygame.init()
@@ -25,11 +27,11 @@ CIRCLE = (220, 20, 20)
 BACKGROUND = (230, 206, 172)
 
 
-class GameClient:
+class Game:
     def __init__(self):
         self.screen = pygame.display.set_mode(size)
         pygame.display.set_caption('五子棋')
-        self.game = Board(RULE)
+        self.game = game_client
         self.player = None
 
     def quit(self):
@@ -66,12 +68,12 @@ class GameClient:
 
     def draw_mouse(self):
         x, y = self.get_mouse_pos()
-        if ROW_COUNT >= x >= 0 and COLUMN_COUNT >= y >= 0 and not self.game.board[x][y]:
+        if ROW_COUNT >= x >= 0 and COLUMN_COUNT >= y >= 0 and not self.game.board.board[x][y]:
             point = (start_point[0]+x*SQUARE_SIZE, start_point[1]+y*SQUARE_SIZE)
             pygame.draw.circle(self.screen, CIRCLE, point, piece_size, 3)
 
     def draw_piece(self):
-        for i, row in enumerate(self.game.board):
+        for i, row in enumerate(self.game.board.board):
             for j, value in enumerate(row):
                 if value:
                     x = i * SQUARE_SIZE + start_point[0]
@@ -80,15 +82,15 @@ class GameClient:
 
     def play(self):
         pressed = pygame.mouse.get_pressed(3)
-        if pressed[0] and self.game.active_player == self.player:
+        if pressed[0] and self.game.is_my_turn:
             x, y = self.get_mouse_pos()
             if ROW_COUNT >= x >= 0 and COLUMN_COUNT >= y >= 0:
-                self.game.set_piece(x, y)
+                self.game.play(x, y)
 
 
 if __name__ == '__main__':
 
-    game = GameClient()
+    game = Game()
     # 游戏主循环
     running = True
     while running:

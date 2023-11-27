@@ -1,6 +1,6 @@
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
-from network import app
+from server import app
 
 
 if __name__ == '__main__':

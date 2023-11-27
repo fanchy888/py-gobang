@@ -1,6 +1,5 @@
-
-from gobang.manager import manager
-from network import server
+from server import server
+from server.controller import controller
 
 
 @server.event(namespace='/game')
@@ -25,13 +24,12 @@ def catch_all(event, sid, data):
 
 @server.on('join_room', namespace='/game')
 def join(sid):
-    room = manager.join_room(sid)
-    server.enter_room(sid, room=room, namespace='/game')
+    room = controller.join_room(sid)
     print(sid, room)
 
 
 @server.on('play', namespace='/game')
 def play(sid, data):
-    manager.play(sid, data)
+    controller.play(sid, data)
 
 

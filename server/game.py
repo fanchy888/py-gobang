@@ -8,7 +8,6 @@ class GameServer:
         self.is_black = True
         self.room = room
         self.players = {}
-        self.namespace = '/game'
         self.member_count = 0
 
     def join(self, sid):
@@ -30,7 +29,13 @@ class GameServer:
     @property
     def info(self):
         return {
+            'players': self.players,
+            'room': self.room
+        }
+
+    @property
+    def board_detail(self):
+        return {
             'board': self.board.board,
-            'black': self.is_black,
-            'player': self.players
+            'is_black': self.is_black
         }
