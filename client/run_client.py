@@ -81,8 +81,7 @@ class Game:
                     pygame.draw.circle(self.screen, BLACK if value == 1 else WHITE, (x, y), piece_size)
 
     def play(self):
-        pressed = pygame.mouse.get_pressed(3)
-        if pressed[0] and self.game.is_my_turn:
+        if self.game.is_my_turn:
             x, y = self.get_mouse_pos()
             if ROW_COUNT >= x >= 0 and COLUMN_COUNT >= y >= 0:
                 self.game.play(x, y)
@@ -99,6 +98,7 @@ if __name__ == '__main__':
                 running = False
                 pygame.quit()
                 sys.exit()
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                game.play()
         game.draw()
-        game.play()
     game.quit()
