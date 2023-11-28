@@ -6,8 +6,10 @@ class Board:
     def __init__(self, rule=19):
         self.rule = rule
         self.board = [[0 for i in range(rule)] for j in range(rule)]
+        self.last = None
 
     def play_piece(self, x, y, value):
         if not self.board[x][y]:
             self.board[x][y] = value
+            self.last = [x, y]
 

@@ -2,7 +2,7 @@
 import pygame
 import sys
 
-from client import game_client
+from client.menu import Menu
 from config import config
 
 pygame.init()
@@ -13,10 +13,10 @@ COLUMN_COUNT = RULE - 1
 SQUARE_SIZE = 40
 
 width = (COLUMN_COUNT + 2) * SQUARE_SIZE
-height = (ROW_COUNT + 2) * SQUARE_SIZE
+height = (ROW_COUNT + 4) * SQUARE_SIZE
 size = (width, height)
 
-start_point = (SQUARE_SIZE, SQUARE_SIZE)
+start_point = (SQUARE_SIZE, SQUARE_SIZE*2)
 board_size = (COLUMN_COUNT * SQUARE_SIZE, ROW_COUNT * SQUARE_SIZE)
 length = COLUMN_COUNT * SQUARE_SIZE
 piece_size = 18
@@ -26,22 +26,31 @@ WHITE = (230, 230, 230)
 CIRCLE = (220, 20, 20)
 BACKGROUND = (230, 206, 172)
 
+FONT = pygame.font.SysFont('pingfang', 30)
 
-class Game:
+
+class MainWindow:
     def __init__(self):
         self.screen = pygame.display.set_mode(size)
         pygame.display.set_caption('五子棋')
-        self.game = game_client
-        self.player = None
+        self.menu = Menu(size, FONT)
+        self.game = None
 
     def quit(self):
+        self.game = None
         pygame.quit()
 
     def draw(self):
         self.draw_board()
-        self.draw_piece()
-        self.draw_mouse()
+        if self.game is None:
+            self.draw_menu()
+        else:
+            self.draw_game()
         pygame.display.update()
+
+    def draw_menu(self):
+        self.screen.blit(self.menu.surface, self.menu.pos)
+        self.menu.draw()
 
     def draw_board(self):
         self.screen.fill(BACKGROUND)
@@ -66,6 +75,34 @@ class Game:
         y = round((y - start_point[1]) / SQUARE_SIZE)
         return x, y
 
+    def draw_game(self):
+        self.draw_head()
+        if self.game.started:
+            self.draw_piece()
+            self.draw_mouse()
+
+    def draw_head(self):
+        x, y = SQUARE_SIZE, SQUARE_SIZE
+
+        user1 = FONT.render('You: ', True, (130, 130, 130))
+        t_length, _ = user1.get_size()
+        self.screen.blit(user1, (x, y//2))
+        pygame.draw.circle(self.screen, BLACK if self.game.color == 1 else WHITE, (x+t_length+piece_size, y), piece_size)
+
+        if self.game.started:
+            user2 = FONT.render('Opp: ', True, (130, 130, 130))
+            t_length, _ = user2.get_size()
+            x = size[0] - SQUARE_SIZE - piece_size * 2 - t_length
+            self.screen.blit(user2, (x, y // 2))
+            pygame.draw.circle(self.screen, WHITE if self.game.color == 1 else BLACK, (x+t_length+piece_size, y), piece_size)
+            pygame.draw.circle(self.screen, BLACK if self.game.is_black else WHITE, (size[0]//2, y), piece_size)
+
+        else:
+            user2 = FONT.render('Waiting...', True, (130, 130, 130))
+            t_length, _ = user2.get_size()
+            x, y = (size[0] - SQUARE_SIZE - t_length, SQUARE_SIZE)
+            self.screen.blit(user2, (x, y // 2))
+
     def draw_mouse(self):
         x, y = self.get_mouse_pos()
         if ROW_COUNT >= x >= 0 and COLUMN_COUNT >= y >= 0 and not self.game.board.board[x][y]:
@@ -79,6 +116,18 @@ class Game:
                     x = i * SQUARE_SIZE + start_point[0]
                     y = j * SQUARE_SIZE + start_point[1]
                     pygame.draw.circle(self.screen, BLACK if value == 1 else WHITE, (x, y), piece_size)
+        if self.game.board.last:
+            pygame.draw.rect(self.screen, (137, 190, 178),
+                             (self.game.board.last[0] * SQUARE_SIZE + start_point[0] - SQUARE_SIZE//2,
+                              self.game.board.last[1] * SQUARE_SIZE + start_point[1] - SQUARE_SIZE//2,
+                              SQUARE_SIZE, SQUARE_SIZE), 2)
+
+    def click(self):
+        if self.game:
+            if self.game.started:
+                self.play()
+        else:
+            self.game = self.menu.click()
 
     def play(self):
         if self.game.is_my_turn:
@@ -89,7 +138,7 @@ class Game:
 
 if __name__ == '__main__':
 
-    game = Game()
+    game = MainWindow()
     # 游戏主循环
     running = True
     while running:
@@ -99,6 +148,6 @@ if __name__ == '__main__':
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                game.play()
+                game.click()
         game.draw()
     game.quit()

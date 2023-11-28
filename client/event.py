@@ -1,6 +1,6 @@
 import socketio
 from client import client
-from client.game import game_client
+from client.game import online_game
 
 
 @client.on('*')
@@ -11,14 +11,17 @@ def catch_all(event, data):
 @client.on('start', namespace='/game')
 def start(data):
     print('game started', data)
-    game_client.start(data)
+    online_game.start(data)
 
 
 @client.on('update', namespace='/game')
 def update(data):
-    game_client.update(data)
+    online_game.update(data)
 
 
+@client.on('quit', namespace='/game')
+def update():
+    online_game.quit()
 
 
 

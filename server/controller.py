@@ -12,7 +12,7 @@ class GameServerController:
         self.rooms[name] = GameServer(name)
         return self.rooms[name]
 
-    def get_room(self, sid):
+    def _join_room(self, sid):
         for r, game in self.rooms.items():
             if game.member_count < 2:
                 game.join(sid)
@@ -23,10 +23,19 @@ class GameServerController:
         return game.room
 
     def join_room(self, sid):
-        room = self.get_room(sid)
+        room = self._join_room(sid)
         server.enter_room(sid, room=room, namespace='/game')
         if self.rooms[room].member_count == 2:
             self.start(room)
+        return room
+
+    def leave_room(self, room, sid):
+        if room in self.rooms:
+            self.rooms[room].drop(sid)
+            if self.rooms[room].member_count == 0:
+                del self.rooms[room]
+
+        server.emit('quit', room=room, namespace='/game')
 
     def get_game(self, room):
         return self.rooms[room]
