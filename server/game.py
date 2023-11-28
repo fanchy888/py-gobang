@@ -10,6 +10,18 @@ class GameServer:
         self.players = {}
         self.member_count = 0
 
+    def reset(self):
+        self.board = Board(config.rule)
+        self.is_black = True
+
+    def drop(self, sid):
+        if sid in self.players:
+            del self.players[sid]
+            self.member_count -= 1
+            for s in self.players:
+                self.players[s] = self.member_count
+            self.reset()
+
     def join(self, sid):
         self.member_count += 1
         self.players[sid] = self.member_count
@@ -37,5 +49,6 @@ class GameServer:
     def board_detail(self):
         return {
             'board': self.board.board,
-            'is_black': self.is_black
+            'is_black': self.is_black,
+            'last': self.board.last
         }

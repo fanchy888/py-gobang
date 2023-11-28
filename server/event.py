@@ -12,6 +12,7 @@ def disconnect(sid):
     print("Disconnecting", sid)
     rooms = server.rooms(sid, namespace='/game')
     for r in rooms:
+        controller.leave_room(r, sid)
         print(sid, 'leaving room', r)
         server.leave_room(sid, r)
 
