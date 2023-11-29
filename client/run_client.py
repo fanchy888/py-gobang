@@ -136,8 +136,7 @@ class MainWindow:
                 self.game.play(x, y)
 
 
-if __name__ == '__main__':
-
+def run_game():
     game = MainWindow()
     # 游戏主循环
     running = True
@@ -151,3 +150,8 @@ if __name__ == '__main__':
                 game.click()
         game.draw()
     game.quit()
+
+
+if __name__ == '__main__':
+    run_game()
+

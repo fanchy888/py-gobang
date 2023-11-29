@@ -4,3 +4,5 @@ __pycache__/
 *.yaml
 dist/
 *.egg-info/
+build/
+*.spec

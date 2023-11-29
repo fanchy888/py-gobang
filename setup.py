@@ -34,6 +34,7 @@ setup(
     platforms="any",
     entry_points={},
     install_requires=[
-        'pygame', 'python-socketio[client]'
+        'pygame', 'python-socketio[client]', 'pyyaml'
     ],
+
 )

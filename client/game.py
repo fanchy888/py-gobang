@@ -38,6 +38,7 @@ class OnlineGameClient(BaseGameClient):
     def make_init(self):
         if not self.connected:
             url = config.host
+            print('connecting', url)
             client.connect(url, socketio_path='/socket-game', transports=['websocket'], namespaces=['/game'])
             client.emit('join_room', namespace='/game')
             self.sid = client.get_sid('/game')
