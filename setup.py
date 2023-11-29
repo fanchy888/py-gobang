@@ -6,26 +6,27 @@ from setuptools import setup, find_packages
 from functools import reduce
 
 
-def get_files(folder):
-    store = {}
-    for subdir, dirs, files in os.walk(folder):
-        for _file in files:
-            store.setdefault(subdir, [])
-            store[subdir].append(os.path.join(subdir, _file))
-    return [item for item in store.items()]
-
-
-data_directories = ["./"]
-data_files = reduce(lambda x, y: x + get_files(y), data_directories, [])
+# def get_files(folder):
+#     store = {}
+#     for subdir, dirs, files in os.walk(folder):
+#         for _file in files:
+#             store.setdefault(subdir, [])
+#             store[subdir].append(os.path.join(subdir, _file))
+#     return [item for item in store.items()]
+#
+#
+# data_directories = ['config.py', 'config.yaml']
+# data_files = reduce(lambda x, y: x + get_files(y), data_directories, [])
 
 
 setup(
     name="oloGame",
-    version='1.0.0',
-    packages=find_packages(exclude=["tests.*", "tests", "__pycache__"]),
+    version='',
+    packages=find_packages(),
     description="olo game",
     long_description="online game with socketio",
     author="chunyu.fan",
+    url='www.twibo.icu',
     include_package_data=True,
     author_email="459091757@qq.com",
     zip_safe=False,
@@ -35,5 +36,4 @@ setup(
     install_requires=[
         'pygame', 'python-socketio[client]'
     ],
-    data_files=data_files
 )

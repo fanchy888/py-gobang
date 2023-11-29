@@ -11,7 +11,10 @@ def load():
 
 class Config:
     def __init__(self):
-        self.cfg = load()['olo']
+        try:
+            self.cfg = load()['olo']
+        except Exception as e:
+            self.cfg = {'host': 'ws://localhost:5555'}
 
     @property
     def host(self):
