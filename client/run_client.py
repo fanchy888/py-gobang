@@ -144,7 +144,7 @@ def run_game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                pygame.quit()
+                game.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 game.click()

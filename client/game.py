@@ -1,3 +1,5 @@
+import time
+
 from client import client
 from config import config
 from gobang.board import Board
@@ -19,8 +21,8 @@ class BaseGameClient:
     def start(self, data):
         self.board = Board(config.rule)
         self.is_black = True
-        self.started = True
         self.color = data.get('color', Board.BLACK)
+        self.started = True
 
     @property
     def is_my_turn(self):
@@ -48,10 +50,11 @@ class OnlineGameClient(BaseGameClient):
         self.reset()
 
     def start(self, data):
-        super().start(data)
         self.players = data['players']
         self.room = data['room']
-        self.color = self.players[self.sid]
+        data['color'] = self.players[self.sid]
+        super().start(data)
+        # time.sleep(1)
 
     def update(self, data):
         board = data['board']
@@ -60,8 +63,9 @@ class OnlineGameClient(BaseGameClient):
         self.is_black = data['is_black']
 
     def play(self, x, y):
-        data = {'room': self.room, 'pos': [x, y]}
-        client.emit('play', data=data, namespace='/game')
+        if self.started:
+            data = {'room': self.room, 'pos': [x, y]}
+            client.emit('play', data=data, namespace='/game')
 
 
 class SingleGameClient(BaseGameClient):

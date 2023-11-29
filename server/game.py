@@ -9,22 +9,27 @@ class GameServer:
         self.room = room
         self.players = {}
         self.member_count = 0
+        self.started = False
 
     def reset(self):
         self.board = Board(config.rule)
         self.is_black = True
+        self.started = False
 
     def drop(self, sid):
         if sid in self.players:
             del self.players[sid]
             self.member_count -= 1
             for s in self.players:
-                self.players[s] = self.member_count
+                self.players[s] = 1
             self.reset()
 
     def join(self, sid):
         self.member_count += 1
-        self.players[sid] = self.member_count
+        if not self.players:
+            self.players[sid] = 1
+        else:
+            self.players[sid] = 2
 
     def check_right(self, sid):
         color = self.players[sid]

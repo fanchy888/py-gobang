@@ -42,8 +42,9 @@ class GameServerController:
 
     def start(self, room):
         game = self.rooms[room]
-        print('game start...', room)
         server.emit('start', data=game.info, room=room, namespace='/game')
+        game.started = True
+        print('game start...', room)
 
     def play(self, sid, data):
         room = data['room']
