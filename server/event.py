@@ -25,8 +25,12 @@ def catch_all(event, sid, data):
 
 @server.on('join_room', namespace='/game')
 def join(sid):
-    room = controller.join_room(sid)
-    print('user joined', room, sid)
+    controller.join_room(sid)
+
+
+@server.on('ready', namespace='/game')
+def ready(sid, room):
+    controller.handle_ready(sid, room)
 
 
 @server.on('play', namespace='/game')

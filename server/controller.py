@@ -2,7 +2,7 @@ from server import server
 from server.game import GameServer
 
 
-class GameServerController:
+class GameRoomController:
     def __init__(self):
         self.rooms = {}
 
@@ -12,27 +12,32 @@ class GameServerController:
         self.rooms[name] = GameServer(name)
         return self.rooms[name]
 
-    def _join_room(self, sid):
+    def dispatch_room(self):
         for r, game in self.rooms.items():
-            if game.member_count < 2:
-                game.join(sid)
-                return r
+            if not game.full:
+                return game
 
-        game = self.generate_room()
-        game.join(sid)
-        return game.room
+        room = self.generate_room()
+        return room
 
     def join_room(self, sid):
-        room = self._join_room(sid)
-        server.enter_room(sid, room=room, namespace='/game')
-        if self.rooms[room].member_count == 2:
-            self.start(room)
+        room = None
+        while room is None:
+            game = self.dispatch_room()
+            room = game.room
+            success = game.join(sid)
+            if success:
+                server.enter_room(sid, room=game.room, namespace='/game')
+                print('user joined', room, sid)
+                server.emit('joined', data=game.info, room=room, namespace='/game')
+            else:
+                room = None
         return room
 
     def leave_room(self, room, sid):
         if room in self.rooms:
             self.rooms[room].drop(sid)
-            if self.rooms[room].member_count == 0:
+            if not self.rooms[room].players:
                 del self.rooms[room]
 
         server.emit('quit', room=room, namespace='/game')
@@ -40,11 +45,13 @@ class GameServerController:
     def get_game(self, room):
         return self.rooms[room]
 
-    def start(self, room):
+    def handle_ready(self, sid, room):
         game = self.rooms[room]
-        server.emit('start', data=game.info, room=room, namespace='/game')
-        game.started = True
-        print('game start...', room)
+        game.get_ready(sid)
+        if game.all_ready():
+            print('game start...', room)
+            game.start()
+            server.emit('start', data=game.info, room=room, namespace='/game')
 
     def play(self, sid, data):
         room = data['room']
@@ -53,4 +60,4 @@ class GameServerController:
         server.emit('update', data=game.board_detail, room=room, namespace='/game')
 
 
-controller = GameServerController()
+controller = GameRoomController()

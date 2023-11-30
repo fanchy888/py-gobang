@@ -8,6 +8,12 @@ def catch_all(event, data):
     pass
 
 
+@client.on('joined', namespace='/game')
+def joined(data):
+    print('joined room', data['room'])
+    online_game.joined(data)
+
+
 @client.on('start', namespace='/game')
 def start(data):
     print('game started', data)

@@ -1,5 +1,7 @@
+import time
+
 from config import config
-from gobang.board import Board
+from gobang.board import Board, Player
 
 
 class GameServer:
@@ -8,45 +10,64 @@ class GameServer:
         self.is_black = True
         self.room = room
         self.players = {}
-        self.member_count = 0
         self.started = False
+
+    @property
+    def full(self):
+        return len(self.players) == 2
+
+    def get_ready(self, sid):
+        p = self.players[sid]
+        p.ready = True
+
+    def all_ready(self):
+        for p in self.players.values():
+            if not p.ready:
+                return False
+        return self.full
+
+    def start(self):
+        players = sorted(self.players.values(), key=lambda x: x.number)
+        for i, p in enumerate(players):
+            p.color = i+1
+        self.is_black = True
+        self.started = True
 
     def reset(self):
         self.board = Board(config.rule)
         self.is_black = True
         self.started = False
+        for p in self.players.values():
+            p.reset()
 
     def drop(self, sid):
         if sid in self.players:
             del self.players[sid]
-            self.member_count -= 1
-            for s in self.players:
-                self.players[s] = 1
             self.reset()
 
     def join(self, sid):
-        self.member_count += 1
-        if not self.players:
-            self.players[sid] = 1
-        else:
-            self.players[sid] = 2
+        if self.full or sid in self.players:
+            return False
+        player = Player(sid)
+        self.players[sid] = player
+        return True
 
-    def check_right(self, sid):
-        color = self.players[sid]
-        return (color == self.board.BLACK) == self.is_black
+    def check_right(self, player):
+        return (player.color == self.board.BLACK) == self.is_black
 
     def move(self, user_id, pos):
         x, y = pos
-        value = self.players[user_id]
-        if not self.check_right(user_id):
+        player = self.players[user_id]
+        if not self.check_right(player):
             return
-        self.board.play_piece(x, y, value)
+
+        self.board.play_piece(x, y, player.color)
         self.is_black = not self.is_black
 
     @property
     def info(self):
         return {
-            'players': self.players,
+            'players': {k: v.to_json() for k, v in self.players.items()},
             'room': self.room
         }
 
@@ -57,3 +78,6 @@ class GameServer:
             'is_black': self.is_black,
             'last': self.board.last
         }
+
+
+

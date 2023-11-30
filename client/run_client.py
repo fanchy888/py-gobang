@@ -42,7 +42,7 @@ class MainWindow:
 
     def draw(self):
         self.draw_board()
-        if self.game is None:
+        if self.game is None or self.menu.state < self.menu.READY:
             self.draw_menu()
         else:
             self.draw_game()
@@ -87,7 +87,8 @@ class MainWindow:
         user1 = FONT.render('You: ', True, (130, 130, 130))
         t_length, _ = user1.get_size()
         self.screen.blit(user1, (x, y//2))
-        pygame.draw.circle(self.screen, BLACK if self.game.color == 1 else WHITE, (x+t_length+piece_size, y), piece_size)
+        if self.game.color:
+            pygame.draw.circle(self.screen, BLACK if self.game.color == 1 else WHITE, (x+t_length+piece_size, y), piece_size)
 
         if self.game.started:
             user2 = FONT.render('Opp: ', True, (130, 130, 130))
@@ -123,11 +124,13 @@ class MainWindow:
                               SQUARE_SIZE, SQUARE_SIZE), 2)
 
     def click(self):
-        if self.game:
-            if self.game.started:
-                self.play()
-        else:
-            self.game = self.menu.click()
+        if self.menu.state < self.menu.JOINED:
+            self.game = self.menu.click_mode()
+        elif self.menu.state == self.menu.JOINED:
+            if self.menu.click_ready():
+                self.game.ready()
+        elif self.game and self.game.started:
+            self.play()
 
     def play(self):
         if self.game.is_my_turn:

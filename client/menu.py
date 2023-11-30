@@ -6,14 +6,21 @@ class Menu:
     SINGLE = 1
     ONLINE = 2
 
+    JOINED = 1
+    READY = 2
+    STARTED = 3
+
     def __init__(self, window_size, font):
         self.mode = 0
         self.window_size = window_size
         self.menu_size = window_size[0]//2, window_size[1]//2
         self.font = font
         self.surface = pygame.Surface(self.menu_size, pygame.SRCALPHA, 32).convert_alpha()
-        self.buttons = self.make_buttons()
+        self.buttons = []
+        self.ready_button = None
+        self.make_buttons()
         self.pos = (self.window_size[0] - self.menu_size[0])//2, (self.window_size[1] - self.menu_size[1])//2
+        self.state = 0
 
     def make_buttons(self):
         buttons = [
@@ -27,7 +34,12 @@ class Menu:
             y = i * (btn_size[1] + 60) + self.menu_size[1] // 4
             button = Button(self.surface, self.font, b, (x, y), btn_size)
             res.append(button)
-        return res
+        self.buttons = res
+
+        btn_size = (200, 80)
+        y = (self.menu_size[1] - 80) // 2
+        self.ready_button = Button(self.surface, self.font,
+                                   {'name': 'Ready', 'value': True, 'enabled': True}, (x, y), btn_size)
 
     def generate_game(self, mode):
         if mode == self.ONLINE:
@@ -38,19 +50,33 @@ class Menu:
             return SingleGameClient()
 
     def draw(self):
+        self.surface.fill((0,0,0,0))
         x, y = pygame.mouse.get_pos()
         relative_mouse_pos = x - self.pos[0], y - self.pos[1]
-        for btn in self.buttons:
-            btn.draw(relative_mouse_pos)
+        if self.state < self.JOINED:
+            for btn in self.buttons:
+                btn.draw(relative_mouse_pos)
 
-    def click(self):
+        elif self.state == self.JOINED:
+            self.ready_button.draw(relative_mouse_pos)
+
+    def click_mode(self):
         x, y = pygame.mouse.get_pos()
         relative_mouse_pos = x - self.pos[0], y - self.pos[1]
         for btn in self.buttons:
             if btn.enabled and btn.check_hover(relative_mouse_pos):
+                self.state = self.JOINED
                 return self.generate_game(btn.value)
-
         return None
+
+    def click_ready(self):
+        x, y = pygame.mouse.get_pos()
+        relative_mouse_pos = x - self.pos[0], y - self.pos[1]
+        btn = self.ready_button
+        if btn.enabled and btn.check_hover(relative_mouse_pos):
+            self.state = self.READY
+            return btn.value
+        return False
 
 
 class Button:

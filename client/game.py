@@ -2,26 +2,26 @@ import time
 
 from client import client
 from config import config
-from gobang.board import Board
+from gobang.board import Board, Player
 
 
 class BaseGameClient:
     def __init__(self):
-        self.color = Board.BLACK
+        self.color = None
         self.board = Board(config.rule)
         self.is_black = True
         self.started = False
 
     def reset(self):
-        self.color = Board.BLACK
+        self.color = None
         self.board = Board(config.rule)
         self.is_black = True
         self.started = False
 
-    def start(self, data):
+    def start(self, color):
         self.board = Board(config.rule)
         self.is_black = True
-        self.color = data.get('color', Board.BLACK)
+        self.color = color
         self.started = True
 
     @property
@@ -49,12 +49,26 @@ class OnlineGameClient(BaseGameClient):
     def quit(self):
         self.reset()
 
-    def start(self, data):
-        self.players = data['players']
+    def joined(self, data):
+        for sid, player_info in data['players'].items():
+            if sid not in self.players:
+                self.players[sid] = Player.make_player(sid)
         self.room = data['room']
-        data['color'] = self.players[self.sid]
-        super().start(data)
-        # time.sleep(1)
+
+    def ready(self):
+        self.players[self.sid].ready = True
+        client.emit('ready', self.room, namespace='/game')
+
+    def start(self, data):
+        for sid, player_info in data['players'].items():
+            if sid not in self.players:
+                print('wtf', data, self.players)
+                return
+            self.players[sid].ready = player_info['ready']
+            self.players[sid].color = player_info['color']
+
+        self.room = data['room']
+        super().start(self.players[self.sid].color)
 
     def update(self, data):
         board = data['board']
