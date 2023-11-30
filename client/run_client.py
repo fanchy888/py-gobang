@@ -85,16 +85,16 @@ class MainWindow:
         x, y = SQUARE_SIZE, SQUARE_SIZE
 
         user1 = FONT.render('You: ', True, (130, 130, 130))
-        t_length, _ = user1.get_size()
-        self.screen.blit(user1, (x, y//2))
+        t_length, t_height = user1.get_size()
+        self.screen.blit(user1, (x, y-t_height//2))
         if self.game.color:
             pygame.draw.circle(self.screen, BLACK if self.game.color == 1 else WHITE, (x+t_length+piece_size, y), piece_size)
 
         if self.game.started:
             user2 = FONT.render('Opp: ', True, (130, 130, 130))
-            t_length, _ = user2.get_size()
+            t_length, t_height = user2.get_size()
             x = size[0] - SQUARE_SIZE - piece_size * 2 - t_length
-            self.screen.blit(user2, (x, y // 2))
+            self.screen.blit(user2, (x, y-t_height//2))
             pygame.draw.circle(self.screen, WHITE if self.game.color == 1 else BLACK, (x+t_length+piece_size, y), piece_size)
             pygame.draw.circle(self.screen, BLACK if self.game.is_black else WHITE, (size[0]//2, y), piece_size)
 
