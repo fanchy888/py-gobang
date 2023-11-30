@@ -80,6 +80,8 @@ class MainWindow:
         if self.game.started:
             self.draw_piece()
             self.draw_mouse()
+        if self.game.state == self.game.END:
+            self.draw_end()
 
     def draw_head(self):
         x, y = SQUARE_SIZE, SQUARE_SIZE
@@ -123,14 +125,23 @@ class MainWindow:
                               self.game.board.last[1] * SQUARE_SIZE + start_point[1] - SQUARE_SIZE//2,
                               SQUARE_SIZE, SQUARE_SIZE), 2)
 
+    def draw_end(self):
+        msg = FONT.render('Click to continue', True, (100, 100, 100))
+        w, h = msg.get_size()
+        self.screen.blit(msg, ((size[0]-w)//2, (size[1]-h)//2))
+
     def click(self):
         if self.menu.state < self.menu.JOINED:
             self.game = self.menu.click_mode()
         elif self.menu.state == self.menu.JOINED:
             if self.menu.click_ready():
                 self.game.ready()
-        elif self.game and self.game.started:
-            self.play()
+        elif self.game:
+            if self.game.started:
+                self.play()
+            elif self.game.state == self.game.END:
+                self.menu.state = self.menu.JOINED
+                self.game.reset()
 
     def play(self):
         if self.game.is_my_turn:

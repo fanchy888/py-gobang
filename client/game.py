@@ -6,23 +6,32 @@ from gobang.board import Board, Player
 
 
 class BaseGameClient:
+    CREATED = 0
+    READY = 1
+    STARTED = 2
+    END = 3
+
     def __init__(self):
         self.color = None
         self.board = Board(config.rule)
         self.is_black = True
-        self.started = False
+        self.state = self.CREATED
 
     def reset(self):
         self.color = None
         self.board = Board(config.rule)
         self.is_black = True
-        self.started = False
+        self.state = self.CREATED
 
     def start(self, color):
         self.board = Board(config.rule)
         self.is_black = True
         self.color = color
-        self.started = True
+        self.state = self.STARTED
+
+    @property
+    def started(self):
+        return self.state == self.STARTED
 
     @property
     def is_my_turn(self):
@@ -47,7 +56,7 @@ class OnlineGameClient(BaseGameClient):
             self.connected = True
 
     def quit(self):
-        self.reset()
+        self.state = self.END
 
     def joined(self, data):
         for sid, player_info in data['players'].items():
@@ -58,6 +67,7 @@ class OnlineGameClient(BaseGameClient):
     def ready(self):
         self.players[self.sid].ready = True
         client.emit('ready', self.room, namespace='/game')
+        self.state = self.READY
 
     def start(self, data):
         for sid, player_info in data['players'].items():
