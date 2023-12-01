@@ -82,6 +82,7 @@ class MainWindow:
             self.draw_piece()
             self.draw_mouse()
         if self.game.state == self.game.END:
+            self.draw_piece()
             self.draw_end()
 
     def draw_head(self):
@@ -130,8 +131,12 @@ class MainWindow:
         if self.game.winner:
             txt = 'You win!' if self.game.winner == self.game.color else 'You lose!'
             msg = FONT2.render(txt, True, (1, 77, 130))
-            w, h = msg.get_size()
-            self.screen.blit(msg, ((size[0]-w)//2, size[1]//2-h-50))
+        else:
+            txt = '你的对手不想跟你玩了:)'
+            msg = FONT2.render(txt, True, (30, 41, 61))
+
+        w, h = msg.get_size()
+        self.screen.blit(msg, ((size[0]-w)//2, size[1]//2-h-50))
 
         msg = FONT.render('Click to continue', True, (20, 20, 20))
         w, h = msg.get_size()
