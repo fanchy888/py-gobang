@@ -26,8 +26,8 @@ WHITE = (230, 230, 230)
 CIRCLE = (220, 20, 20)
 BACKGROUND = (230, 206, 172)
 
-FONT = pygame.font.SysFont('pingfang', 30)
-FONT2 = pygame.font.SysFont('pingfang', 45)
+FONT = pygame.font.SysFont("SimHei", 30)
+FONT2 = pygame.font.SysFont("SimHei", 45)
 
 
 class MainWindow:
