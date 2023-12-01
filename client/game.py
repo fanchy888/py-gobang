@@ -37,6 +37,10 @@ class BaseGameClient:
     def is_my_turn(self):
         return self.started and self.is_black == (self.color == Board.BLACK)
 
+    @property
+    def winner(self):
+        return self.board.winner
+
 
 class OnlineGameClient(BaseGameClient):
     def __init__(self):
@@ -83,12 +87,19 @@ class OnlineGameClient(BaseGameClient):
     def update(self, data):
         x,  y = data['pos']
         color = data['color']
-        self.board.play_piece(x, y, color)
         self.board.last = [x, y]
         self.is_black = data['is_black']
 
+        valid = self.board.play_piece(x, y, color)
+        if valid:
+            self.board.update_score(x, y, color)
+
+        if self.board.winner:
+            client.emit('finish', data=self.room, namespace='/game')
+            self.state = self.END
+
     def play(self, x, y):
-        if self.started:
+        if self.started and self.board.board[x][y] == 0:
             data = {'room': self.room, 'pos': [x, y]}
             client.emit('play', data=data, namespace='/game')
 

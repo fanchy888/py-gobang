@@ -38,3 +38,6 @@ def play(sid, data):
     controller.play(sid, data)
 
 
+@server.on('finish', namespace='/game')
+def finish(sid, room):
+    controller.finish(room)

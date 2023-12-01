@@ -27,6 +27,7 @@ CIRCLE = (220, 20, 20)
 BACKGROUND = (230, 206, 172)
 
 FONT = pygame.font.SysFont('pingfang', 30)
+FONT2 = pygame.font.SysFont('pingfang', 45)
 
 
 class MainWindow:
@@ -126,9 +127,15 @@ class MainWindow:
                               SQUARE_SIZE, SQUARE_SIZE), 2)
 
     def draw_end(self):
-        msg = FONT.render('Click to continue', True, (100, 100, 100))
+        if self.game.winner:
+            txt = 'You win!' if self.game.winner == self.game.color else 'You lose!'
+            msg = FONT2.render(txt, True, (1, 77, 130))
+            w, h = msg.get_size()
+            self.screen.blit(msg, ((size[0]-w)//2, size[1]//2-h-50))
+
+        msg = FONT.render('Click to continue', True, (20, 20, 20))
         w, h = msg.get_size()
-        self.screen.blit(msg, ((size[0]-w)//2, (size[1]-h)//2))
+        self.screen.blit(msg, ((size[0]-w)//2, size[1]//2+50))
 
     def click(self):
         if self.menu.state < self.menu.JOINED:
@@ -140,8 +147,10 @@ class MainWindow:
             if self.game.started:
                 self.play()
             elif self.game.state == self.game.END:
-                self.menu.state = self.menu.JOINED
-                self.game.reset()
+                x, y = self.get_mouse_pos()
+                if ROW_COUNT >= x >= 0 and COLUMN_COUNT >= y >= 0:
+                    self.menu.state = self.menu.JOINED
+                    self.game.reset()
 
     def play(self):
         if self.game.is_my_turn:
@@ -154,14 +163,17 @@ def run_game():
     game = MainWindow()
     # 游戏主循环
     running = True
+    clicked = 0
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
                 game.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                game.click()
+                tick = pygame.time.get_ticks()
+                if tick - clicked >= 100:  # 100ms delay
+                    game.click()
+                    clicked = tick
         game.draw()
     game.quit()
 

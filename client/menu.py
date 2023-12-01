@@ -28,7 +28,7 @@ class Menu:
             {'name': 'Online', 'value': self.ONLINE, 'enabled': True},
         ]
         res = []
-        btn_size = (200, 60)
+        btn_size = (200, 50)
         x = (self.menu_size[0] - btn_size[0]) // 2
         for i, b in enumerate(buttons):
             y = i * (btn_size[1] + 60) + self.menu_size[1] // 4

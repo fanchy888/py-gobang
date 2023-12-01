@@ -59,15 +59,19 @@ class GameServer:
         x, y = pos
         player = self.players[user_id]
         if not self.check_right(player):
-            return
+            return None
 
-        self.board.play_piece(x, y, player.color)
-        self.is_black = not self.is_black
-        return {
-            'color': player.color,
-            'is_black': self.is_black,
-            'pos': [x, y]
-        }
+        if self.board.play_piece(x, y, player.color):
+            self.is_black = not self.is_black
+            return {
+                'color': player.color,
+                'is_black': self.is_black,
+                'pos': self.board.last
+            }
+
+    def finish(self):
+        print("game finished")
+        self.reset()
 
     @property
     def info(self):

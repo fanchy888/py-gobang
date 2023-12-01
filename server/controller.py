@@ -57,7 +57,12 @@ class GameRoomController:
         room = data['room']
         game = self.get_game(room)
         action_detail = game.play_piece(sid, data['pos'])
-        server.emit('update', data=action_detail, room=room, namespace='/game')
+        if action_detail:
+            server.emit('update', data=action_detail, room=room, namespace='/game')
+
+    def finish(self, room):
+        game = self.get_game(room)
+        game.finish()
 
 
 controller = GameRoomController()
