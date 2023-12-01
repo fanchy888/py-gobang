@@ -55,7 +55,7 @@ class GameServer:
     def check_right(self, player):
         return (player.color == self.board.BLACK) == self.is_black
 
-    def move(self, user_id, pos):
+    def play_piece(self, user_id, pos):
         x, y = pos
         player = self.players[user_id]
         if not self.check_right(player):
@@ -63,6 +63,11 @@ class GameServer:
 
         self.board.play_piece(x, y, player.color)
         self.is_black = not self.is_black
+        return {
+            'color': player.color,
+            'is_black': self.is_black,
+            'pos': [x, y]
+        }
 
     @property
     def info(self):
@@ -71,13 +76,6 @@ class GameServer:
             'room': self.room
         }
 
-    @property
-    def board_detail(self):
-        return {
-            'board': self.board.board,
-            'is_black': self.is_black,
-            'last': self.board.last
-        }
 
 
 

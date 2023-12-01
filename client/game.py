@@ -81,9 +81,10 @@ class OnlineGameClient(BaseGameClient):
         super().start(self.players[self.sid].color)
 
     def update(self, data):
-        board = data['board']
-        self.board.board = board
-        self.board.last = data['last']
+        x,  y = data['pos']
+        color = data['color']
+        self.board.play_piece(x, y, color)
+        self.board.last = [x, y]
         self.is_black = data['is_black']
 
     def play(self, x, y):

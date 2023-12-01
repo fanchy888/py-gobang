@@ -102,9 +102,9 @@ class MainWindow:
 
         else:
             user2 = FONT.render('Waiting...', True, (130, 130, 130))
-            t_length, _ = user2.get_size()
+            t_length, t_height = user2.get_size()
             x, y = (size[0] - SQUARE_SIZE - t_length, SQUARE_SIZE)
-            self.screen.blit(user2, (x, y // 2))
+            self.screen.blit(user2, (x, y-t_height//2))
 
     def draw_mouse(self):
         x, y = self.get_mouse_pos()
