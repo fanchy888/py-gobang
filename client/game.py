@@ -1,5 +1,7 @@
 import time
 
+from ai_player.ai_game import StateBoard
+from ai_player.mcts_player import MCTSPlayer, init_ai_player
 from client import client
 from config import config
 from gobang.board import Board, Player
@@ -28,6 +30,9 @@ class BaseGameClient:
         self.is_black = True
         self.color = color
         self.state = self.STARTED
+
+    def wait(self):
+        return
 
     @property
     def started(self):
@@ -107,12 +112,62 @@ class OnlineGameClient(BaseGameClient):
 class SingleGameClient(BaseGameClient):
     def __init__(self):
         super().__init__()
+        self.state_board = None
+        self.AI_player = None
+        self.wait_for_ai = False
 
     def make_init(self):
-        pass
+        self.state_board = StateBoard(width=config.rule, height=config.rule, n_in_row=5)
+        self.state_board.init_board()
+        self.AI_player = init_ai_player(config.rule, config.rule)
+
+    def ready(self):
+        self.state = self.READY
+        self.make_init()
+        self.start(1)
 
     def play(self, x, y):
-        self.board.play_piece(x, y, self.color)
+        if self.is_my_turn:
+
+            valid = self.board.play_piece(x, y, self.color)
+            if valid:
+                self.board.update_score(x, y, self.color)
+            else:
+                return
+            self.check_winner()
+
+            self.is_black = not self.is_black
+            move = x * config.rule + y
+            self.state_board.do_move(move)
+            self.wait_for_ai = True
+
+    def wait(self):
+        if self.wait_for_ai:
+            self.ai_play()
+
+    def reset(self):
+        self.state_board = None
+        self.AI_player = None
+        self.wait_for_ai = False
+        super().reset()
+
+    def ai_play(self):
+        if not self.is_my_turn and self.wait_for_ai:
+            print('ai playing...')
+            self.wait_for_ai = False
+            move = self.AI_player.get_action(self.state_board)
+            x = move // config.rule
+            y = move % config.rule
+            ai_color = 2
+            self.board.play_piece(x, y, ai_color)
+            self.check_winner()
+            self.state_board.do_move(move)
+            self.is_black = not self.is_black
+
+    def check_winner(self):
+        if self.board.winner:
+            self.state = self.END
+
 
 
 online_game = OnlineGameClient()

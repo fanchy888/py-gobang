@@ -163,6 +163,10 @@ class MainWindow:
             if ROW_COUNT >= x >= 0 and COLUMN_COUNT >= y >= 0:
                 self.game.play(x, y)
 
+    def wait(self):
+        if self.game and self.game.started:
+            self.game.wait()
+
 
 def run_game():
     game = MainWindow()
@@ -180,6 +184,7 @@ def run_game():
                     game.click()
                     clicked = tick
         game.draw()
+        game.wait()
     game.quit()
 
 

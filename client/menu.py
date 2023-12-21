@@ -1,5 +1,5 @@
 import pygame
-from client.game import OnlineGameClient, SingleGameClient, online_game
+from client.game import OnlineGameClient, SingleGameClient, online_game, local_game
 
 
 class Menu:
@@ -24,7 +24,7 @@ class Menu:
 
     def make_buttons(self):
         buttons = [
-            {'name': 'Single', 'value': self.SINGLE, 'enabled': False},
+            {'name': 'Single', 'value': self.SINGLE, 'enabled': True},
             {'name': 'Online', 'value': self.ONLINE, 'enabled': True},
         ]
         res = []
@@ -47,7 +47,7 @@ class Menu:
             return online_game
 
         elif mode == self.SINGLE:
-            return SingleGameClient()
+            return local_game
 
     def draw(self):
         self.surface.fill((0,0,0,0))
