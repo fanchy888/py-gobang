@@ -160,6 +160,7 @@ class SingleGameClient(BaseGameClient):
             y = move % config.rule
             ai_color = 2
             self.board.play_piece(x, y, ai_color)
+            self.board.update_score(x, y, ai_color)
             self.check_winner()
             self.state_board.do_move(move)
             self.is_black = not self.is_black
