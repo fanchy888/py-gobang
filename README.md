@@ -1,5 +1,5 @@
-# olo
-games
+# py-gobang
+A gobang game in python
 
 ## server
 ```python -m server.run_server```
