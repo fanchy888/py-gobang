@@ -1,5 +1,5 @@
 # py-gobang
-A gobang game in python
+Multiplayer gobang game using python socketio
 
 ## server
 ```python -m server.run_server```
