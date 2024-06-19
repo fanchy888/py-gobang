@@ -1,8 +1,10 @@
+import copy
 import time
 
 from ai_player.ai_game import StateBoard
 from ai_player.mcts_player import MCTSPlayer, init_ai_player
 from client import client
+from client.ai import ChessAI
 from config import config
 from gobang.board import Board, Player
 
@@ -117,9 +119,10 @@ class SingleGameClient(BaseGameClient):
         self.wait_for_ai = False
 
     def make_init(self):
-        self.state_board = StateBoard(width=config.rule, height=config.rule, n_in_row=5)
-        self.state_board.init_board()
-        self.AI_player = init_ai_player(config.rule, config.rule)
+        # self.state_board = StateBoard(width=config.rule, height=config.rule, n_in_row=5)
+        # self.state_board.init_board()
+        # self.AI_player = init_ai_player(config.rule, config.rule)
+        self.AI_player = ChessAI(config.rule)
 
     def ready(self):
         self.state = self.READY
@@ -137,8 +140,8 @@ class SingleGameClient(BaseGameClient):
             self.check_winner()
 
             self.is_black = not self.is_black
-            move = x * config.rule + y
-            self.state_board.do_move(move)
+            # move = x * config.rule + y
+            # self.state_board.do_move(move)
             self.wait_for_ai = True
 
     def wait(self):
@@ -155,14 +158,15 @@ class SingleGameClient(BaseGameClient):
         if not self.is_my_turn and self.wait_for_ai:
             print('ai playing...')
             self.wait_for_ai = False
-            move = self.AI_player.get_action(self.state_board)
-            x = move // config.rule
-            y = move % config.rule
+            # move = self.AI_player.get_action(self.state_board)
+            # x = move // config.rule
+            # y = move % config.rule
             ai_color = 2
+            x, y = self.AI_player.get_action(self.board.board, ai_color)
             self.board.play_piece(x, y, ai_color)
             self.board.update_score(x, y, ai_color)
             self.check_winner()
-            self.state_board.do_move(move)
+            # self.state_board.do_move(move)
             self.is_black = not self.is_black
 
     def check_winner(self):
