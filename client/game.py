@@ -170,6 +170,5 @@ class SingleGameClient(BaseGameClient):
             self.state = self.END
 
 
-
 online_game = OnlineGameClient()
 local_game = SingleGameClient()

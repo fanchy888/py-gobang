@@ -22,9 +22,6 @@ class StateBoard(object):
         self.players = [1, 2]  # player1 and player2
 
     def init_board(self, start_player=0):
-        if self.width < self.n_in_row or self.height < self.n_in_row:
-            raise Exception('board width and height can not be '
-                            'less than {}'.format(self.n_in_row))
         self.current_player = self.players[start_player]  # start player
         # keep available moves in a list
         self.availables = list(range(self.width * self.height))

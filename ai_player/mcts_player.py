@@ -217,14 +217,26 @@ class MCTSPlayer(object):
         return "MCTS {}".format(self.player)
 
 
+def weak_policy_value_fn(board):
+    """a function that takes in a state and outputs a list of (action, probability)
+    tuples and a score for the state"""
+    # return uniform probabilities and 0 score for pure MCTS
+    action_probs = np.ones(len(board.availables))/len(board.availables)
+    return zip(board.availables, action_probs), 0
+
+
 def init_ai_player(width, height):
     path = os.path.dirname(os.path.abspath(__file__))
-    model_file = path + '/ai.model'
+    model_file = path + '/best_policy.model'
     # with open(model_file, 'rb') as f:
-    #     policy_param = pickle.load(f)  # To support python3
-    best_policy = PolicyValueNet(width, height, model_file=model_file)
+    #     policy_param = pickle.load(f, encoding='bytes')  # To support python3
+    #
+    # best_policy = PolicyValueNetNumpy(width, height, policy_param)
 
-    return MCTSPlayer(best_policy.policy_value_fn, c_puct=5, n_playout=400)
+    best_policy = PolicyValueNet(width, height, model_file=model_file)
+    policy_fn = best_policy.policy_value_fn
+    # policy_fn = weak_policy_value_fn
+    return MCTSPlayer(policy_fn, c_puct=5, n_playout=100)
 
 
 if __name__ == '__main__':

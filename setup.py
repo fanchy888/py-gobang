@@ -20,10 +20,10 @@ from functools import reduce
 
 
 setup(
-    name="oloGame",
+    name="gobangGame",
     version='',
     packages=find_packages(),
-    description="olo game",
+    description="gobang game",
     long_description="online game with socketio",
     author="chunyu.fan",
     url='www.twibo.icu',
